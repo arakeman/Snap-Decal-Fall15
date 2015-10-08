@@ -940,7 +940,7 @@ SpriteMorph.prototype.initBlocks = function () {
 		reportCube: {
 			type: 'reporter',
 			category: 'operators',
-			spec: '%n * %n * %n'
+			spec: '%n'
 		},
         reportRound: {
             type: 'reporter',
