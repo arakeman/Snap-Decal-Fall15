@@ -2019,10 +2019,6 @@ Process.prototype.reportQuotient = function (a, b) {
     return +a / +b;
 };
 
-Process.prototype.reportQuotient = function (a) {
-    return +a * +a * +a;
-};
-
 Process.prototype.reportModulus = function (a, b) {
     var x = +a,
         y = +b;
