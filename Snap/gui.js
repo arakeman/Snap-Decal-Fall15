@@ -3167,8 +3167,8 @@ IDE_Morph.prototype.rawMergeProjectString = function (str) {
     StageMorph.prototype.enableInheritance = false;
     if (Process.prototype.isCatchingErrors) {
         try {
-            this.serializer.openProject(
-                this.serializer.load(str, this),
+            this.serializer.mergeProject(
+                str,
                 this
             );
         } catch (err) {

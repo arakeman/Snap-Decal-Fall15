@@ -1655,6 +1655,57 @@ SnapSerializer.prototype.openProject = function (project, ide) {
     ide.world().keyboardReceiver = project.stage;
 };
 
+// MERGE CODE
+SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
+    var model, project, myself = this;
+    xmlNode = this.parse(xmlString);
+    model = {project: xmlNode};
+    if (+xmlNode.attributes.version > this.version) {
+        throw 'Project uses newer version of Serializer';
+    }
+    project = this.project;
+    // {
+    //     globalVariables: ide.globalVariables,
+    //     stage: ide.stage,
+    //     sprites: {}
+    // };
+    project.globalVariables = ide.globalVariables;
+    project.stage = ide.stage;
+    model.stage = model.project.require('stage');
+    //project.sprites[project.stage.name] = project.stage;
+    secondProjName = model.project.attributes.name;
+    model.stage.childrenNamed('sprite').forEach(function (model) {
+        var sprite  = new SpriteMorph(project.globalVariables);
+ 
+        if (model.attributes.id) {
+            myself.objects[model.attributes.id] = sprite;
+        }
+        if (model.attributes.name) {
+            sprite.name = model.attributes.name + ' (' + secondProjName + ')';
+            project.sprites[model.attributes.name] = sprite;
+        }
+        if (model.attributes.color) {
+            sprite.color = myself.loadColor(model.attributes.color);
+        }
+        if (model.attributes.pen) {
+            sprite.penPoint = model.attributes.pen;
+        }
+        project.stage.add(sprite);
+        ide.sprites.add(sprite);
+        sprite.scale = parseFloat(model.attributes.scale || '1');
+        sprite.rotationStyle = parseFloat(
+            model.attributes.rotation || '1'
+        );
+        sprite.isDraggable = model.attributes.draggable !== 'false';
+        sprite.isVisible = model.attributes.hidden !== 'true';
+        sprite.heading = parseFloat(model.attributes.heading) || 0;
+        sprite.drawNew();
+        sprite.gotoXY(+model.attributes.x || 0, +model.attributes.y || 0);
+        myself.loadObject(sprite, model);
+    });
+    return project;
+};
+
 // SnapSerializer XML-representation of objects:
 
 // Generics
