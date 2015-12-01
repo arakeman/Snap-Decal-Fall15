@@ -3368,7 +3368,7 @@ IDE_Morph.prototype.mergeProject = function (name) {
     var str;
     if (name) {
         this.showMessage('merging project\n' + name);
-        this.setProjectName(name);
+        //this.setProjectName(name);
         str = localStorage['-snap-project-' + name];
         this.mergeProjectString(str);
         this.setURL('#merge:' + str);
