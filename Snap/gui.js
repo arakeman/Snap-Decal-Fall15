@@ -4530,7 +4530,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
 
     this.addSourceButton('cloud', localize('Cloud'), 'cloud');
     this.addSourceButton('local', localize('Browser'), 'storage');
-    if (this.task === 'open') {
+    if (this.task === 'open' || this.task === 'merge') {
         this.addSourceButton('examples', localize('Examples'), 'poster');
     }
     this.srcBar.fixLayout();
@@ -4541,9 +4541,9 @@ ProjectDialogMorph.prototype.buildContents = function () {
         this.body.add(this.nameField);
     }
 
-    if (this.task === 'merge') {
-        this.addSourceButton('examples', localize('Examples'), 'poster');
-    }
+    // if (this.task === 'merge') {
+    //     this.addSourceButton('examples', localize('Examples'), 'poster');
+    // }
 
     this.listField = new ListMorph([]);
     this.fixListFieldItemColors();
@@ -4603,7 +4603,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
     this.notesField.acceptsDrops = false;
     this.notesField.contents.acceptsDrops = false;
 
-    if (this.task === 'open' || this.task == 'merge') {
+    if (this.task === 'open' || this.task === 'merge') {
         this.notesText = new TextMorph('');
     } else { // 'save'
         this.notesText = new TextMorph(this.ide.projectNotes);
@@ -4623,7 +4623,7 @@ ProjectDialogMorph.prototype.buildContents = function () {
     if (this.task === 'open') {
         this.addButton('openProject', 'Open');
         this.action = 'openProject';
-    } else if (this.task == 'merge') {
+    } else if (this.task === 'merge') {
         this.addButton('mergeProject', 'Merge');
         this.action = 'mergeProject';
     } else { // 'save'
@@ -4822,7 +4822,7 @@ ProjectDialogMorph.prototype.setSource = function (source) {
             if (myself.nameField) {
                 myself.nameField.setContents(item.name || '');
             }
-            if (myself.task === 'open') {
+            if (myself.task === 'open' || myself.task === 'merge') {
 
                 src = localStorage['-snap-project-' + item.name];
                 xml = myself.ide.serializer.parse(src);
@@ -4871,7 +4871,7 @@ ProjectDialogMorph.prototype.setSource = function (source) {
     }
     this.buttons.fixLayout();
     this.fixLayout();
-    if (this.task === 'open') {
+    if (this.task === 'open' || this.task === 'merge') {
         this.clearDetails();
     }
 };
@@ -4963,7 +4963,7 @@ ProjectDialogMorph.prototype.installCloudProjectList = function (pl) {
         if (myself.nameField) {
             myself.nameField.setContents(item.ProjectName || '');
         }
-        if (myself.task === 'open') {
+        if (myself.task === 'open' || myself.task === 'merge') {
             myself.notesText.text = item.Notes || '';
             myself.notesText.drawNew();
             myself.notesField.contents.adjustBounds();
@@ -4999,7 +4999,7 @@ ProjectDialogMorph.prototype.installCloudProjectList = function (pl) {
     this.deleteButton.show();
     this.buttons.fixLayout();
     this.fixLayout();
-    if (this.task === 'open') {
+    if (this.task === 'open' || this.task === 'merge') {
         this.clearDetails();
     }
 };

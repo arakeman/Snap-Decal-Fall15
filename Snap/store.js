@@ -1663,18 +1663,16 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
     if (+xmlNode.attributes.version > this.version) {
         throw 'Project uses newer version of Serializer';
     }
-    project = this.project;
-    // {
-    //     globalVariables: ide.globalVariables,
-    //     stage: ide.stage,
-    //     sprites: {}
-    // };
-    project.globalVariables = ide.globalVariables;
-    project.stage = ide.stage;
+    project = this.project = {
+        globalVariables: ide.globalVariables,
+        stage: ide.stage,
+        sprites: {}
+    };
     model.stage = model.project.require('stage');
-    //project.sprites[project.stage.name] = project.stage;
+    model.sprites = model.stage.require('sprites');
+    project.sprites[project.stage.name] = project.stage;
     secondProjName = model.project.attributes.name;
-    model.stage.childrenNamed('sprite').forEach(function (model) {
+    model.sprites.childrenNamed('sprite').forEach(function (model) {
         var sprite  = new SpriteMorph(project.globalVariables);
  
         if (model.attributes.id) {
@@ -1692,6 +1690,8 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
         }
         project.stage.add(sprite);
         ide.sprites.add(sprite);
+        //ide.stage.add(sprite);
+        //ide.corral.addSprite(sprite);
         sprite.scale = parseFloat(model.attributes.scale || '1');
         sprite.rotationStyle = parseFloat(
             model.attributes.rotation || '1'
@@ -1703,7 +1703,40 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
         sprite.gotoXY(+model.attributes.x || 0, +model.attributes.y || 0);
         myself.loadObject(sprite, model);
     });
-    return project;
+     // restore inheritance and nesting associations
+    project.stage.children.forEach(function (sprite) {
+        var exemplar, anchor;
+        if (sprite.inheritanceInfo) { // only sprites can inherit
+            exemplar = project.sprites[
+                sprite.inheritanceInfo.exemplar
+            ];
+            if (exemplar) {
+                sprite.setExemplar(exemplar);
+            }
+        }
+        if (sprite.nestingInfo) { // only sprites may have nesting info
+            anchor = project.sprites[sprite.nestingInfo.anchor];
+            if (anchor) {
+                anchor.attachPart(sprite);
+            }
+            sprite.rotatesWithAnchor = (sprite.nestingInfo.synch === 'true');
+        }
+    });
+    project.stage.children.forEach(function (sprite) {
+        delete sprite.inheritanceInfo;
+        if (sprite.nestingInfo) { // only sprites may have nesting info
+            sprite.nestingScale = +(sprite.nestingInfo.scale || sprite.scale);
+            delete sprite.nestingInfo;
+        }
+    });
+
+    this.objects = {};
+    this.project = {};
+    this.mediaDict = {};
+
+//    ide.stage.drawNew();
+    ide.createCorral();
+    ide.fixLayout();
 };
 
 // SnapSerializer XML-representation of objects:
