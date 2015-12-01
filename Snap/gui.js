@@ -2483,36 +2483,7 @@ IDE_Morph.prototype.projectMenu = function () {
     }
     menu.addItem('Save As...', 'saveProjectsBrowser');
     menu.addItem(
-        'Merge with...',
-        function () {
-            var inp = document.createElement('input');
-            if (myself.filePicker) {
-                document.body.removeChild(myself.filePicker);
-                myself.filePicker = null;
-            }
-            inp.type = 'file';
-            inp.style.color = "transparent";
-            inp.style.backgroundColor = "transparent";
-            inp.style.border = "none";
-            inp.style.outline = "none";
-            inp.style.position = "absolute";
-            inp.style.top = "0px";
-            inp.style.left = "0px";
-            inp.style.width = "0px";
-            inp.style.height = "0px";
-            inp.addEventListener(
-                "change",
-                function () {
-                    document.body.removeChild(inp);
-                    myself.filePicker = null;
-                    world.hand.processDrop(inp.files);
-                },
-                false
-            );
-            document.body.appendChild(inp);
-            myself.filePicker = inp;
-            inp.click();
-        },
+        'Merge with...', 'openProjectsBrowser',
         'Merge costumes, sprites, blocks and sounds from another project\'s  stage into current project\'s stage' // looks up the actual text in the translator
     );
     menu.addLine();
