@@ -1397,11 +1397,37 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
     if (+xmlNode.attributes.version > this.version) {
         throw 'Project uses newer version of Serializer';
     }
+    /* Merge Blocks */
+    var stage = ide.stage;
+
+    project = this.project = {
+        stage: stage,
+        sprites: {},
+        targetStage: ide.stage// for secondary custom block def look-up
+    };
+    model.blocks = model.project.childNamed('blocks');
+    if (model.blocks) {
+        this.loadCustomBlocks(stage, model.blocks, true);
+        this.populateCustomBlocks(
+            stage,
+            model.blocks,
+            true
+        );
+        this.objects = {};
+        stage.globalBlocks.forEach(function (def) {
+            def.receiver = null;
+        });
+    }
+    this.objects = {};
+    this.project = {};
+    this.mediaDict = {};
+
     project = this.project = {
         globalVariables: ide.globalVariables,
         stage: ide.stage,
         sprites: {}
     };
+
     /* Merge Sprites */
     model.stage = model.project.require('stage');
     model.sprites = model.stage.require('sprites');
@@ -1473,30 +1499,6 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
     ide.createCorral();
     ide.fixLayout();
 
-    /* Merge Blocks */
-    var stage = new StageMorph();
-
-    this.project = {
-        stage: stage,
-        sprites: {},
-        targetStage: ide.stage // for secondary custom block def look-up
-    };
-    model.blocks = model.childNamed('blocks');
-    if (model.blocks != null) {
-        this.loadCustomBlocks(stage, model.blocks, true);
-        this.populateCustomBlocks(
-            stage,
-            model.blocks,
-            true
-        );
-        this.objects = {};
-        stage.globalBlocks.forEach(function (def) {
-            def.receiver = null;
-        });
-    }
-    this.objects = {};
-    this.project = {};
-    this.mediaDict = {};
 };
 
 // SnapSerializer XML-representation of objects:
