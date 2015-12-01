@@ -1418,9 +1418,11 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
             def.receiver = null;
         });
     }
+
     this.objects = {};
     this.project = {};
     this.mediaDict = {};
+
 
     project = this.project = {
         globalVariables: ide.globalVariables,
@@ -1428,8 +1430,21 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
         sprites: {}
     };
 
-    /* Merge Sprites */
+    /* Merge Stage Items */
     model.stage = model.project.require('stage');
+    /* Merge Other Elements */
+
+    this.loadNestingInfo(project.stage, model.stage);
+    this.loadCostumes(project.stage, model.stage);
+    this.loadSounds(project.stage, model.stage);
+    // this.loadCustomBlocks(object, blocks);
+    // this.populateCustomBlocks(object, blocks);
+    //this.loadVariables(object.variables, model.require('variables'));
+    if (model.stage.childNamed('scripts')) {
+        this.loadScripts(project.stage.scripts, model.stage.childNamed('scripts'));
+    }
+
+    /* Merge Sprites */
     model.sprites = model.stage.require('sprites');
     project.sprites[project.stage.name] = project.stage;
     secondProjName = model.project.attributes.name;
