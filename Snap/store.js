@@ -1401,6 +1401,7 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
     var stage = ide.stage;
 
     project = this.project = {
+        globalVariables: ide.globalVariables,
         stage: stage,
         sprites: {},
         targetStage: ide.stage// for secondary custom block def look-up
@@ -1418,25 +1419,33 @@ SnapSerializer.prototype.mergeProject = function(xmlString, ide) {
             def.receiver = null;
         });
     }
-
+    model.globalVariables = model.project.childNamed('variables')
+    if (model.globalVariables) {
+        this.loadVariables(
+            project.globalVariables,
+            model.globalVariables
+        );
+    }
     this.objects = {};
-    this.project = {};
+    // this.project = {};
     this.mediaDict = {};
 
 
-    project = this.project = {
-        globalVariables: ide.globalVariables,
-        stage: ide.stage,
-        sprites: {}
-    };
+    // project = this.project = {
+    //     globalVariables: ide.globalVariables,
+    //     stage: ide.stage,
+    //     sprites: {}
+    // };
 
     /* Merge Stage Items */
     model.stage = model.project.require('stage');
-    /* Merge Other Elements */
-
-    this.loadNestingInfo(project.stage, model.stage);
-    this.loadCostumes(project.stage, model.stage);
-    this.loadSounds(project.stage, model.stage);
+    // this.loadNestingInfo(project.stage, model.stage);
+    // if (model.stage.childNamed('costumes')) {
+    //     costumes = model.stage.childNamed('costumes');
+    //     project.stage.costumes = concat(project.stage.costumes, this.loadValue(costumes.require('list')));
+    // }
+    // this.loadCostumes(project.stage, model.stage);
+    // this.loadSounds(project.stage, model.stage);
     // this.loadCustomBlocks(object, blocks);
     // this.populateCustomBlocks(object, blocks);
     //this.loadVariables(object.variables, model.require('variables'));
